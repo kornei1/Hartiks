@@ -1,0 +1,620 @@
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+
+SET APP STYLESHEET - FULL STYLES HERE
+LIGHT THEME - MODIFIED FOR BRIGHTER INTERFACE
+
+///////////////////////////////////////////////////////////////////////////////////////////////// */
+
+/* ОСНОВНІ КОЛЬОРИ ДЛЯ СВІТЛОЇ ТЕМИ */
+/*
+# Background: #f0f0f0 (rgb(240, 240, 240)) - Дуже світло-сірий, майже білий
+# Primary Background: #ffffff (rgb(255, 255, 255)) - Чисто білий
+# Text Color: #333333 (rgb(51, 51, 51)) - Темний сірий для тексту
+# Border/Separator: #cccccc (rgb(204, 204, 204)) - Світло-сірий для рамок
+# Accent Color: #3f51b5 (rgb(63, 81, 181)) - Середній синій для акцентів (наприклад, hover, selection)
+# Accent Hover: #5c6bc0 (rgb(92, 107, 192))
+# Accent Pressed: #303f9f (rgb(48, 63, 159))
+*/
+
+/* ЗАГАЛЬНІ СТИЛІ ДЛЯ ВСІХ ВІДЖЕТІВ */
+QWidget{
+	color: rgb(51, 51, 51); /* Загальний колір тексту */
+	font: 10pt "Segoe UI";
+    background-color: rgb(240, 240, 240); /* Загальний базовий світлий фон */
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Tooltip */
+QToolTip {
+	color: rgb(51, 51, 51);
+	background-color: rgba(255, 255, 255, 200);
+	border: 1px solid rgb(204, 204, 204);
+	background-image: none;
+	background-position: left center;
+    background-repeat: no-repeat;
+	border: none;
+	border-left: 2px solid rgb(63, 81, 181); /* Акцентний синій */
+	text-align: left;
+	padding-left: 8px;
+	margin: 0px;
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Bg App - Стиль для центрального віджета з objectName("bgApp") */
+#bgApp {	
+	background-color: rgb(240, 240, 240); /* Основний фон додатка */
+	border: 1px solid rgb(204, 204, 204);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Left Menu (якщо використовується) - зазвичай для світлої теми це теж світлий фон */
+#leftMenuBg {	
+	background-color: rgb(250, 250, 250); /* Світліший фон для лівого меню */
+}
+#topLogo {
+	background-color: rgb(250, 250, 250);
+	/* Якщо у вас є світла версія PyDracula.png, вкажіть її тут */
+	/* background-image: url(:/images/images/PyDracula_light.png); */
+	background-position: centered;
+	background-repeat: no-repeat;
+}
+#titleLeftApp { font: 63 12pt "Segoe UI Semibold"; color: rgb(51, 51, 51); }
+#titleLeftDescription { font: 8pt "Segoe UI"; color: rgb(100, 100, 100); }
+
+/* MENUS (якщо використовуються) */
+#topMenu .QPushButton {	
+	background-position: left center;
+    background-repeat: no-repeat;
+	border: none;
+	border-left: 22px solid transparent;
+	background-color: transparent;
+	text-align: left;
+	padding-left: 44px;
+    color: rgb(51, 51, 51);
+}
+#topMenu .QPushButton:hover {
+	background-color: rgb(230, 230, 230);
+}
+#topMenu .QPushButton:pressed {	
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+	color: rgb(255, 255, 255);
+}
+#bottomMenu .QPushButton {	
+	background-position: left center;
+    background-repeat: no-repeat;
+	border: none;
+	border-left: 20px solid transparent;
+	background-color:transparent;
+	text-align: left;
+	padding-left: 44px;
+    color: rgb(51, 51, 51);
+}
+#bottomMenu .QPushButton:hover {
+	background-color: rgb(230, 230, 230);
+}
+#bottomMenu .QPushButton:pressed {	
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+	color: rgb(255, 255, 255);
+}
+#leftMenuFrame{
+	border-top: 3px solid rgb(204, 204, 204);
+}
+
+/* Toggle Button (якщо використовується) */
+#toggleButton {
+	background-position: left center;
+    background-repeat: no-repeat;
+	border: none;
+	border-left: 20px solid transparent;
+	background-color: rgb(245, 245, 245);
+	text-align: left;
+	padding-left: 44px;
+	color: rgb(100, 100, 100);
+}
+#toggleButton:hover {
+	background-color: rgb(230, 230, 230);
+}
+#toggleButton:pressed {
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+    color: rgb(255, 255, 255);
+}
+
+/* Title Menu (якщо використовується) */
+#titleRightInfo { padding-left: 10px; color: rgb(51, 51, 51); }
+
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Extra Tab (якщо використовується) */
+#extraLeftBox {	
+	background-color: rgb(230, 230, 230);
+}
+#extraTopBg{	
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+}
+
+/* Icon (якщо використовується) */
+#extraIcon {
+	background-position: center;
+	background-repeat: no-repeat;
+	/* Якщо є світла версія icon_settings.png, вкажіть її тут */
+	/* background-image: url(:/icons/images/icons/icon_settings_light.png); */
+}
+
+/* Label (якщо використовується) */
+#extraLabel { color: rgb(255, 255, 255); }
+
+/* Btn Close (якщо використовується) */
+#extraCloseColumnBtn { background-color: rgba(255, 255, 255, 0); border: none;  border-radius: 5px; }
+#extraCloseColumnBtn:hover { background-color: rgb(200, 200, 200); border-style: solid; border-radius: 4px; }
+#extraCloseColumnBtn:pressed { background-color: rgb(180, 180, 180); border-style: solid; border-radius: 4px; }
+
+/* Extra Content (якщо використовується) */
+#extraContent{
+	border-top: 3px solid rgb(204, 204, 204);
+}
+
+/* Extra Top Menus (якщо використовуються) */
+#extraTopMenu .QPushButton {
+background-position: left center;
+    background-repeat: no-repeat;
+	border: none;
+	border-left: 22px solid transparent;
+	background-color:transparent;
+	text-align: left;
+	padding-left: 44px;
+    color: rgb(51, 51, 51);
+}
+#extraTopMenu .QPushButton:hover {
+	background-color: rgb(230, 230, 230);
+}
+#extraTopMenu .QPushButton:pressed {	
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+	color: rgb(255, 255, 255);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Content App (якщо використовується) */
+#contentTopBg{	
+	background-color: rgb(250, 250, 250);
+}
+#contentBottom{
+	border-top: 3px solid rgb(204, 204, 204);
+}
+
+/* Top Buttons (якщо використовуються) */
+#rightButtons .QPushButton { background-color: rgba(255, 255, 255, 0); border: none;  border-radius: 5px; }
+#rightButtons .QPushButton:hover { background-color: rgb(230, 230, 230); border-style: solid; border-radius: 4px; }
+#rightButtons .QPushButton:pressed { background-color: rgb(200, 200, 200); border-style: solid; border-radius: 4px; }
+
+/* Theme Settings (якщо використовуються) */
+#extraRightBox { background-color: rgb(230, 230, 230); }
+#themeSettingsTopDetail { background-color: rgb(63, 81, 181); /* Акцентний синій */ }
+
+/* Bottom Bar (якщо використовується) */
+#bottomBar { background-color: rgb(230, 230, 230); }
+#bottomBar QLabel { font-size: 11px; color: rgb(100, 100, 100); padding-left: 10px; padding-right: 10px; padding-bottom: 2px; }
+
+/* CONTENT SETTINGS (якщо використовуються) */
+/* MENUS */
+#contentSettings .QPushButton {	
+	background-position: left center;
+    background-repeat: no-repeat;
+	border: none;
+	border-left: 22px solid transparent;
+	background-color:transparent;
+	text-align: left;
+	padding-left: 44px;
+    color: rgb(51, 51, 51);
+}
+#contentSettings .QPushButton:hover {
+	background-color: rgb(230, 230, 230);
+}
+#contentSettings .QPushButton:pressed {	
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+	color: rgb(255, 255, 255);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+QTableWidget - Таблиці */
+QTableWidget {	
+	background-color: rgb(255, 255, 255); /* Фон самої таблиці */
+	padding: 10px;
+	border-radius: 5px;
+	gridline-color: rgb(204, 204, 204);
+	border-bottom: 1px solid rgb(204, 204, 204);
+    color: rgb(51, 51, 51); /* Колір тексту в таблиці */
+}
+QTableWidget::item{
+	border-color: rgb(204, 204, 204);
+	padding-left: 5px;
+	padding-right: 5px;
+	gridline-color: rgb(204, 204, 204);
+    background-color: rgb(255, 255, 255); /* Фон комірок */
+}
+QTableWidget::item:selected{
+	background-color: rgb(63, 81, 181); /* Акцентний синій */
+    color: rgb(255, 255, 255); /* Білий текст */
+}
+QHeaderView::section{
+	background-color: rgb(240, 240, 240); /* Фон заголовків стовпців/рядків */
+	max-width: 30px;
+	border: 1px solid rgb(204, 204, 204);
+	border-style: none;
+    border-bottom: 1px solid rgb(204, 204, 204);
+    border-right: 1px solid rgb(204, 204, 204);
+    color: rgb(51, 51, 51); /* Колір тексту заголовків */
+}
+QTableWidget::horizontalHeader {	
+	background-color: rgb(240, 240, 240);
+}
+QHeaderView::section:horizontal
+{
+    border: 1px solid rgb(240, 240, 240);
+	background-color: rgb(240, 240, 240);
+	padding: 3px;
+	border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+}
+QHeaderView::section:vertical
+{
+    border: 1px solid rgb(204, 204, 204);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+LineEdit - Текстові поля вводу */
+QLineEdit {
+	background-color: rgb(255, 255, 255);
+	border-radius: 5px;
+	border: 2px solid rgb(204, 204, 204);
+	padding-left: 10px;
+	selection-color: rgb(255, 255, 255);
+	selection-background-color: rgb(63, 81, 181); /* Акцентний синій */
+    color: rgb(51, 51, 51); /* Колір тексту в полі вводу */
+}
+QLineEdit:hover {
+	border: 2px solid rgb(180, 180, 180);
+}
+QLineEdit:focus {
+	border: 2px solid rgb(63, 81, 181);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+PlainTextEdit - Багаторядкові текстові поля */
+QPlainTextEdit {
+	background-color: rgb(255, 255, 255);
+	border-radius: 5px;
+	padding: 10px;
+	selection-color: rgb(255, 255, 255);
+	selection-background-color: rgb(63, 81, 181); /* Акцентний синій */
+    color: rgb(51, 51, 51); /* Колір тексту */
+}
+QPlainTextEdit  QScrollBar:vertical {
+    width: 8px;
+ }
+QPlainTextEdit  QScrollBar:horizontal {
+    height: 8px;
+ }
+QPlainTextEdit:hover {
+	border: 2px solid rgb(180, 180, 180);
+}
+QPlainTextEdit:focus {
+	border: 2px solid rgb(63, 81, 181);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+ScrollBars - Смуги прокрутки */
+QScrollBar:horizontal {
+    border: none;
+    background: rgb(220, 220, 220);
+    height: 8px;
+    margin: 0px 21px 0 21px;
+	border-radius: 0px;
+}
+QScrollBar::handle:horizontal {
+    background: rgb(63, 81, 181); /* Акцентний синій */
+    min-width: 25px;
+	border-radius: 4px
+}
+QScrollBar::add-line:horizontal {
+    border: none;
+    background: rgb(200, 200, 200);
+    width: 20px;
+	border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:horizontal {
+    border: none;
+    background: rgb(200, 200, 200);
+    width: 20px;
+	border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal
+{
+      background: none;
+}
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+      background: none;
+}
+ QScrollBar:vertical {
+	border: none;
+    background: rgb(220, 220, 220);
+    width: 8px;
+    margin: 21px 0 21px 0;
+	border-radius: 0px;
+ }
+ QScrollBar::handle:vertical {	
+	background: rgb(63, 81, 181); /* Акцентний синій */
+    min-height: 25px;
+	border-radius: 4px
+ }
+ QScrollBar::add-line:vertical {
+      border: none;
+    background: rgb(200, 200, 200);
+      height: 20px;
+	border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+      subcontrol-position: bottom;
+      subcontrol-origin: margin;
+ }
+ QScrollBar::sub-line:vertical {
+	border: none;
+    background: rgb(200, 200, 200);
+      height: 20px;
+	border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+      subcontrol-position: top;
+      subcontrol-origin: margin;
+ }
+ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+      background: none;
+ }
+
+ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+      background: none;
+ }
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+CheckBox */
+QCheckBox {
+    background-color: transparent;
+    color: rgb(51, 51, 51);
+    padding: 5px;
+}
+QCheckBox::indicator {
+    border: 3px solid rgb(200, 200, 200);
+	width: 15px;
+	height: 15px;
+	border-radius: 10px;
+    background: rgb(230, 230, 230);
+}
+QCheckBox::indicator:hover {
+    border: 3px solid rgb(180, 180, 180);
+}
+QCheckBox::indicator:checked {
+    background: 3px solid rgb(63, 81, 181); /* Акцентний синій */
+	border: 3px solid rgb(63, 81, 181);	
+	background-image: url(:/icons/images/icons/cil-check-alt.png); /* Переконайтеся, що ресурс існує */
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+RadioButton */
+QRadioButton {
+    background-color: transparent;
+    color: rgb(51, 51, 51);
+    padding: 5px;
+}
+QRadioButton::indicator {
+    border: 3px solid rgb(200, 200, 200);
+	width: 15px;
+	height: 15px;
+	border-radius: 10px;
+    background: rgb(230, 230, 230);
+}
+QRadioButton::indicator:hover {
+    border: 3px solid rgb(180, 180, 180);
+}
+QRadioButton::indicator:checked {
+    background: 3px solid rgb(63, 81, 181); /* Акцентний синій */
+	border: 3px solid rgb(63, 81, 181);	
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+ComboBox - Випадаючі списки */
+QComboBox{
+	background-color: rgb(255, 255, 255);
+	border-radius: 5px;
+	border: 2px solid rgb(204, 204, 204);
+	padding: 5px;
+	padding-left: 10px;
+    color: rgb(51, 51, 51);
+}
+QComboBox:hover{
+	border: 2px solid rgb(180, 180, 180);
+}
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 25px;	
+	border-left-width: 3px;
+	border-left-color: rgb(204, 204, 204);
+	border-left-style: solid;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;	
+	background-position: center;
+	background-repeat: no-reperat;
+ }
+QComboBox QAbstractItemView { /* Стиль для випадаючого списку (елементів COM1, COM2 і т.д.) */
+	color: rgb(51, 51, 51);	
+	background-color: rgb(255, 255, 255);
+	padding: 10px;
+	selection-background-color: rgb(63, 81, 181); /* Акцентний синій */
+    selection-color: rgb(255, 255, 255); /* Білий текст */
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Sliders - Слайдери */
+QSlider::groove:horizontal {
+    border-radius: 5px;
+    height: 10px;
+	margin: 0px;
+	background-color: rgb(220, 220, 220);
+}
+QSlider::groove:horizontal:hover {
+	background-color: rgb(210, 210, 210);
+}
+QSlider::handle:horizontal {
+    background-color: rgb(63, 81, 181); /* Акцентний синій */
+    border: none;
+    height: 10px;
+    width: 10px;
+    margin: 0px;
+	border-radius: 5px;
+}
+QSlider::handle:horizontal:hover {
+    background-color: rgb(92, 107, 192); /* Акцентний синій (hover) */
+}
+QSlider::handle:horizontal:pressed {
+    background-color: rgb(48, 63, 159); /* Акцентний синій (pressed) */
+}
+
+QSlider::groove:vertical {
+    border-radius: 5px;
+    width: 10px;
+    margin: 0px;
+	background-color: rgb(220, 220, 220);
+}
+QSlider::groove:vertical:hover {
+	background-color: rgb(210, 210, 210);
+}
+QSlider::handle:vertical {
+    background-color: rgb(63, 81, 181); /* Акцентний синій */
+	border: none;
+    height: 10px;
+    width: 10px;
+    margin: 0px;
+	border-radius: 5px;
+}
+QSlider::handle:vertical:hover {
+    background-color: rgb(92, 107, 192); /* Акцентний синій (hover) */
+}
+QSlider::handle:vertical:pressed {
+    background-color: rgb(48, 63, 159); /* Акцентний синій (pressed) */
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+CommandLinkButton - Командні кнопки посилання */
+QCommandLinkButton {	
+	color: rgb(63, 81, 181); /* Акцентний синій */
+	border-radius: 5px;
+	padding: 5px;
+}
+QCommandLinkButton:hover {	
+	color: rgb(92, 107, 192); /* Акцентний синій (hover) */
+	background-color: rgb(230, 230, 230);
+}
+QCommandLinkButton:pressed {	
+	color: rgb(48, 63, 159); /* Акцентний синій (pressed) */
+	background-color: rgb(200, 200, 200);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+Button - Загальний стиль для кнопок */
+QPushButton {
+	border: 2px solid rgb(204, 204, 204);
+	border-radius: 5px;	
+	background-color: rgb(230, 230, 230);
+    color: rgb(51, 51, 51);
+    padding: 5px 10px;
+}
+QPushButton:hover {
+	background-color: rgb(220, 220, 220);
+	border: 2px solid rgb(180, 180, 180);
+}
+QPushButton:pressed {	
+	background-color: rgb(200, 200, 200);
+	border: 2px solid rgb(170, 170, 170);
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+QGroupBox - Групові рамки */
+QGroupBox {
+    background-color: rgb(255, 255, 255); /* Чисто білий фон для груп */
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 5px;
+    margin-top: 20px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    color: rgb(51, 51, 51);
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    color: rgb(63, 81, 181); /* Акцентний синій для заголовка */
+    padding: 0 5px;
+    background-color: rgb(255, 255, 255); /* Фон заголовка групи, щоб не було прозорості */
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+QTabWidget - Вкладки */
+QTabWidget::pane { /* Панель, яка містить вміст вкладок */
+    border: 1px solid rgb(204, 204, 204);
+    background-color: rgb(255, 255, 255); /* Чисто білий фон для області вмісту вкладок */
+    border-radius: 5px;
+    padding: 5px;
+}
+
+QTabWidget::tab-bar {
+    left: 5px;
+}
+
+QTabBar::tab {
+    background-color: rgb(240, 240, 240); /* Фон для неактивних вкладок */
+    color: rgb(51, 51, 51);
+    border: 1px solid rgb(204, 204, 204);
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 8px 15px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: rgb(255, 255, 255); /* Фон для активної вкладки */
+    color: rgb(51, 51, 51);
+    border-bottom-color: rgb(255, 255, 255); /* Зливається з фоном панелі */
+    border-top: 2px solid rgb(63, 81, 181); /* Акцентний синій */
+}
+
+QTabBar::tab:hover {
+    background-color: rgb(230, 230, 230); /* Фон при наведенні на вкладку */
+}
+
+QTabBar::tab:!selected {
+    margin-top: 3px;
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+QLabel - Загальний стиль для QLabel */
+QLabel {
+    color: rgb(51, 51, 51);
+    background-color: transparent;
+}
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////
+QScrollArea - Області прокрутки */
+QScrollArea {
+    background-color: transparent;
+    border: none;
+}
+QScrollArea > QWidget { /* Віджет всередині QScrollArea */
+    background-color: rgb(240, 240, 240); /* Фон вмісту області прокрутки */
+}

@@ -1,0 +1,355 @@
+/* Загальний стиль для всіх віджетів */
+QWidget {
+    background-color: #282a36; /* Уніфікований темний фон */
+    color: #f8f8f2; /* Світлий текст */
+    selection-background-color: #6272a4; /* М'який синій/фіолетовий для виділення */
+    selection-color: #f8f8f2; /* Колір тексту виділення */
+    font-family: "Segoe UI", "Roboto", sans-serif; /* Додаємо сучасний шрифт */
+    font-size: 10pt; /* Задаємо базовий розмір шрифту */
+}
+
+/* Стиль для QMainWindow (головного вікна) */
+QMainWindow {
+    background-color: #282a36;
+}
+
+/* Стиль для QPushButton (кнопок) */
+QPushButton {
+    background-color: #bd93f9; /* Фіолетовий фон, як замовляли */
+    color: #282a36; /* Темний текст на фіолетовому */
+    border: 1px solid #bd93f9;
+    border-radius: 4px;
+    padding: 5px 15px;
+    min-height: 24px;
+    font-weight: bold; /* Зробимо текст кнопок жирним */
+}
+
+QPushButton:hover {
+    background-color: #be7df9; /* Світліший фіолетовий при наведенні */
+    border: 1px solid #be7df9;
+}
+
+QPushButton:pressed {
+    background-color: #a46de6; /* Темніший фіолетовий при натисканні */
+    border: 1px solid #a46de6;
+}
+
+QPushButton:disabled {
+    background-color: #4a4a4a;
+    color: #888888;
+    border: 1px solid #5a5a5a;
+}
+
+/* Стиль для QLineEdit (полів введення тексту) */
+QLineEdit {
+    background-color: #3b3d4d; /* Трохи світліший від фону */
+    color: #f8f8f2;
+    border: 1px solid #6272a4; /* Рамка в колір виділення */
+    border-radius: 4px;
+    padding: 3px;
+}
+
+QLineEdit:focus {
+    border: 1px solid #bd93f9; /* Фіолетова рамка при фокусі */
+}
+
+QLineEdit[readOnly="true"] { /* Стиль для полів, які тільки для читання */
+    background-color: #333442; /* Трохи темніший фон для read-only полів */
+    color: #c0c0c0;
+    border: 1px solid #44475a;
+}
+
+
+/* Стиль для QComboBox (випадаючих списків) */
+QComboBox {
+    background-color: #3b3d4d;
+    color: #f8f8f2;
+    border: 1px solid #6272a4;
+    border-radius: 4px;
+    padding: 3px;
+    min-height: 24px;
+}
+
+QComboBox::drop-down {
+    border: 0px;
+    width: 20px; /* Ширина стрілки */
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/down_arrow_white.png); /* Приклад використання ресурсних файлів. Замініть на ваш шлях */
+    /* Якщо немає ресурсних файлів, можна використовувати іконки SVG через Font Awesome або просто не задавати image, дозволяючи Qt малювати default arrow */
+    width: 14px;
+    height: 14px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #282a36; /* Фон випадаючого списку */
+    color: #f8f8f2;
+    selection-background-color: #6272a4;
+    selection-color: #f8f8f2;
+    border: 1px solid #6272a4;
+}
+
+/* Стиль для QGroupBox (груп віджетів) */
+QGroupBox {
+    background-color: #282a36; /* Уніфікований фон */
+    border: 1px solid #44475a; /* М'яка рамка */
+    border-radius: 4px;
+    margin-top: 2ex; /* Залиште місце для заголовка */
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+    background-color: transparent;
+    color: #f8f8f2;
+    font-weight: bold;
+}
+
+/* Стиль для QLabel (текстових міток) */
+QLabel {
+    color: #f8f8f2;
+}
+
+/* Стиль для QRadioButton (радіокнопок) */
+QRadioButton {
+    spacing: 5px;
+    color: #f8f8f2;
+}
+
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px; /* Круглий індикатор */
+    border: 1px solid #bd93f9; /* Фіолетова рамка */
+    background-color: #3b3d4d; /* Трохи темніший фон, ніж у віджета */
+}
+
+QRadioButton::indicator::checked {
+    background-color: #bd93f9; /* Фіолетовий колір, коли вибрано */
+    border: 1px solid #bd93f9;
+}
+
+/* Стиль для QCheckBox (прапорців) */
+QCheckBox {
+    spacing: 5px;
+    color: #f8f8f2;
+}
+
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #bd93f9; /* Фіолетова рамка */
+    background-color: #3b3d4d;
+    border-radius: 2px; /* Трохи закруглені кути */
+}
+
+QCheckBox::indicator::checked {
+    background-color: #bd93f9; /* Фіолетовий колір, коли вибрано */
+    border: 1px solid #bd93f9;
+    image: url(:/icons/check_mark_white.png); /* Приклад використання ресурсних файлів. Замініть на ваш шлях */
+}
+
+/* Стиль для QTabWidget (вкладок) */
+QTabWidget::pane {
+    border: 1px solid #44475a;
+    background-color: #282a36; /* Уніфікований фон */
+    top: -1px; /* Компенсуємо border-top на вкладках */
+}
+
+QTabBar::tab {
+    background: #3b3d4d; /* Фон вкладки */
+    border: 1px solid #44475a;
+    border-bottom-color: #282a36; /* Щоб зливалося з панеллю */
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    min-width: 8ex;
+    padding: 5px 10px;
+    color: #f8f8f2;
+}
+
+QTabBar::tab:selected {
+    background: #282a36; /* Колір панелі для вибраної вкладки */
+    border-bottom-color: #282a36; /* Щоб зливалося з панеллю */
+    font-weight: bold;
+}
+
+QTabBar::tab:hover {
+    background: #44475a; /* Колір при наведенні */
+}
+
+/* Стиль для QTableWidget (таблиць) */
+QTableWidget {
+    background-color: #282a36; /* Уніфікований фон */
+    gridline-color: #44475a; /* Колір сітки */
+    color: #f8f8f2;
+    border: 1px solid #44475a;
+    selection-background-color: #6272a4;
+    selection-color: #f8f8f2;
+}
+
+QHeaderView::section {
+    background-color: #3b3d4d; /* Колір заголовків таблиці */
+    color: #f8f8f2;
+    padding: 4px;
+    border: 1px solid #44475a;
+    border-bottom: 1px solid #282a36; /* Щоб роздільники колонок були видимі */
+    font-weight: bold;
+}
+
+QTableWidget::item {
+    padding: 4px;
+}
+
+QTableWidget::item:selected {
+    background-color: #6272a4;
+    color: #f8f8f2;
+}
+
+/* Стиль для QScrollArea (областей прокрутки) */
+QScrollArea {
+    background-color: #282a36;
+    border: 1px solid #44475a;
+}
+
+/* Стиль для смуг прокрутки */
+QScrollBar:vertical, QScrollBar:horizontal {
+    border: 1px solid #44475a;
+    background: #3b3d4d;
+    width: 10px; /* для vertical */
+    height: 10px; /* для horizontal */
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #6272a4; /* Колір повзунка */
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    border: none;
+    background: none;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical,
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+/* --- Додаткові стилі для потенційно проблемних віджетів --- */
+
+/* Стиль для QSpinBox та QDoubleSpinBox */
+QSpinBox, QDoubleSpinBox {
+    background-color: #3b3d4d;
+    color: #f8f8f2;
+    border: 1px solid #6272a4;
+    border-radius: 4px;
+    padding: 3px;
+    padding-right: 20px; /* Залишити місце для кнопок */
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 16px;
+    border-left: 1px solid #6272a4;
+    border-bottom: 1px solid #6272a4;
+    border-top-right-radius: 4px;
+    background-color: #44475a; /* Темніший фон для кнопок */
+}
+
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 16px;
+    border-left: 1px solid #6272a4;
+    border-top: 1px solid #6272a4;
+    border-bottom-right-radius: 4px;
+    background-color: #44475a;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: url(:/icons/arrow_up_white.png); /* Замініть на шлях до іконки */
+    width: 10px;
+    height: 10px;
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: url(:/icons/arrow_down_white.png); /* Замініть на шлях до іконки */
+    width: 10px;
+    height: 10px;
+}
+
+QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
+QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover {
+    background-color: #6272a4; /* Колір виділення при наведенні */
+}
+
+/* Стиль для QProgressBar */
+QProgressBar {
+    border: 1px solid #6272a4;
+    border-radius: 5px;
+    text-align: center;
+    color: #f8f8f2;
+    background-color: #3b3d4d;
+}
+
+QProgressBar::chunk {
+    background-color: #bd93f9; /* Фіолетовий колір заповнення */
+    border-radius: 4px;
+}
+
+/* Стиль для QSlider */
+QSlider::groove:horizontal {
+    border: 1px solid #44475a;
+    height: 8px; /* the groove height */
+    background: #3b3d4d;
+    margin: 2px 0;
+    border-radius: 4px;
+}
+
+QSlider::handle:horizontal {
+    background: #bd93f9;
+    border: 1px solid #a46de6;
+    width: 18px;
+    margin: -5px 0; /* handle is 18x18, so needs to be pushed up/down to be centered */
+    border-radius: 9px;
+}
+
+QSlider::add-page:horizontal {
+    background: #3b3d4d;
+}
+
+QSlider::sub-page:horizontal {
+    background: #6272a4; /* Заповнена частина слайдера */
+}
+
+/* Стиль для QToolTip */
+QToolTip {
+    border: 1px solid #6272a4;
+    background-color: #44475a;
+    color: #f8f8f2;
+    padding: 5px;
+    border-radius: 4px;
+    opacity: 200; /* Не прозорий */
+}
+
+/* Стиль для QToolButton (можливо, використовується для іконок меню) */
+QToolButton {
+    background-color: transparent;
+    border: none;
+    color: #f8f8f2;
+    padding: 5px;
+}
+
+QToolButton:hover {
+    background-color: #44475a;
+    border-radius: 3px;
+}
+
+QToolButton:pressed {
+    background-color: #6272a4;
+}

@@ -1,0 +1,17 @@
+-- Designer
+D:\zDocs\Python\HART\HART\venv\Lib\site-packages\qt5_applications\Qt\bin\designer.exe src/gui/GUIv001.ui
+
+-- Compile UI
+pyuic5 src/gui/GUIv001.ui -o src/gui/GUIv2.py
+
+
+
+
+
+
+-- auto-commands to block with Control_Flag is false
+0,1,2,3,7,8,12,13,14,16,20,38,48,
+
+
+hart_bus_controller.py
+scan_bus: 228 line
