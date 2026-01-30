@@ -765,11 +765,12 @@ class HARTBusController(QtCore.QObject):
         return None
 
     def _build_request(self, addr: int, cmd: int, data: bytes = b"") -> bytes:
-        """
-        Build request using library or fallback, BUT force the correct Unique ID
-        from the table if we are in Long Frame mode.
-        ALSO: Tell the bus where to route the packet (routing hint).
-        """
+        # --- Обробка Broadcast для Cmd 11 ---
+        if cmd == 11 and self.ui:
+            rb = getattr(self.ui, "radioButton_command11_broadcast_address", None)
+            if rb and rb.isChecked():
+                addr = 0  # Примусово ставимо 0 для Broadcast
+
         # 1. Update Preambles from UI
         if self.preambles_widget is not None:
             try:
@@ -784,11 +785,8 @@ class HARTBusController(QtCore.QObject):
         # 2. Determine Mode & Search for Unique ID in Table
         is_long = (self.master and self.master.frame_format == "long")
         
-        # --- FIX №2: Підказуємо шині, кому ми це шлемо (Routing Hint) ---
-        # Це критично для Long Frame з реальними ID, бо шина не може вгадати polling addr з UniqueID
         if is_long and self.bus:
             self.bus._forced_polling_for_long = int(addr)
-        # ----------------------------------------------------------------
 
         found_unique_id = None
         if is_long and self.table:

@@ -69,10 +69,6 @@ def send_command_logic(controller, cmd: int):
         except Exception:
             pass
 
-    # =========================================================================
-    # SPEICAL LOGIC FOR COMMAND 6 (Write Polling Address) - PRE-CHECK
-    # =========================================================================
-    # Тут ми перевіряємо конфлікт адрес ДО того, як відправити команду.
     if cmd == 6:
         ui_temp = getattr(controller, "ui", None)
         # Просто читаємо число з поля. Якщо там число - відправляємо.
@@ -273,17 +269,22 @@ def send_command_logic(controller, cmd: int):
             else:
                 print(" -> Device is in ANALOG mode. Loop Current is active.")
 
-        # Cmd 11: simulator echo
-        elif cmd_id == 11 and len(payload) >= 4:
-            fields = [
-                "lineEdit_command11_resp_rev_major",
-                "lineEdit_command11_resp_preambles",
-                "lineEdit_command11_resp_dev_rev",
-                "lineEdit_command11_resp_sw_rev",
-            ]
-            for i, name in enumerate(fields):
-                le = getattr(ui, name, None)
-                if le: le.setText(str(payload[i]))
+        # Cmd 11: Read Unique ID by Tag
+        elif cmd_id == 11 and len(payload) >= 12:
+            # Тепер ми отримуємо повну структуру (як в Cmd 0)
+            # Байті змістилися: [4]=UnivRev, [3]=Preambles, [5]=DevRev, [6]=SwRev
+            
+            le = getattr(ui, "lineEdit_command11_resp_rev_major", None)
+            if le: le.setText(str(payload[4]))
+
+            le = getattr(ui, "lineEdit_command11_resp_preambles", None)
+            if le: le.setText(str(payload[3]))
+
+            le = getattr(ui, "lineEdit_command11_resp_dev_rev", None)
+            if le: le.setText(str(payload[5]))
+
+            le = getattr(ui, "lineEdit_command11_resp_sw_rev", None)
+            if le: le.setText(str(payload[6]))
 
         # Cmd 12: message
         elif cmd_id == 12:

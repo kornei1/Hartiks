@@ -6,8 +6,7 @@ from controllers.hart_bus_controller import HARTBusController
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
-
-    theme_path = "themes/modern_light_v2.qss"
+    theme_path = "themes/modern_dark_purple.qss"
     try:
         with open(theme_path, "r", encoding="utf-8") as f:
             app.setStyleSheet(f.read())

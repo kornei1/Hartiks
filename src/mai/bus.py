@@ -69,49 +69,45 @@ class HARTBus:
             return self._slaves.get(int(polling_address) & 0x3F, None)
 
     def transact_frame(self, request: bytes) -> bytes:
-        """
-        Приймає повний RAW кадр, парсить, відправляє у потрібний slave.handle_request(),
-        очікує delay, повертає повний RAW кадр відповіді.
-        """
         parsed = parse_request_frame(request)
         if parsed is None:
-            # повернемо "порожню" помилкову відповідь (для логів)
             return b""
 
-        # --- FIX: Запам'ятовуємо, скільки преамбул прийшло у запиті ---
-        # message_parser.py повертає поле "preambles" у словнику parsed
-        incoming_preambles_count = parsed.get("preambles", self.preambles)
-        # --------------------------------------------------------------
-
-        # polling address беремо з короткої адреси або з логічної таблиці
-        addr_field = parsed["address"]
+        incoming_preambles = parsed.get("preambles", self.preambles)
+        cmd = parsed.get("command", 0)
+        
+        # Визначаємо адресу отримувача
         if parsed["start"] == START_SHORT:
-            polling = addr_field[0] & 0x3F
+            polling = parsed["address"][0] & 0x3F
         else:
-            # логіка для long frame (залишаємо як було)
             polling = getattr(self, "_forced_polling_for_long", None)
             if polling is None:
                 try:
-                    polling = addr_field[-1] & 0x3F
+                    polling = parsed["address"][-1] & 0x3F
                 except Exception:
                     return b""
 
-        slave = self._route_to_slave(polling)
-        if not slave:
-            # немає відповіді
+        # Якщо адреса 0 і команда 11 -> це пошук пристрою. 
+        target_slaves = []
+        if cmd == 11 and polling == 0:
+            # Broadcast: перебираємо всі пристрої на шині
+            with self._lock:
+                target_slaves = list(self._slaves.values())
+        else:
+            # Unicast: тільки конкретний пристрій
+            slave = self._route_to_slave(polling)
+            if slave:
+                target_slaves = [slave]
+
+        # Перебираємо кандидатів (для Unicast це 1, для Broadcast - всі)
+        for slave in target_slaves:
             time.sleep(self.delay_ms / 1000.0)
-            return b""
-
-        # прокидаємо виклик у slave
-        time.sleep(self.delay_ms / 1000.0)
-        resp_core = slave.handle_request(parsed)  # це вже [START][ADDR..][CMD][BC][DATA]
-        if not resp_core:
-            return b""
-
-        # сформуємо повний кадр: використовуємо incoming_preambles_count замість self.preambles
-        chk = compute_checksum(resp_core)
+            resp_core = slave.handle_request(parsed)
+            
+            # Якщо slave повернув дані - це наша відповідь!
+            # (Slave поверне b"" якщо тег не співпав, див. зміни в base_slave)
+            if resp_core:
+                chk = compute_checksum(resp_core)
+                return bytes([0xFF]) * incoming_preambles + resp_core + bytes([chk])
         
-        # --- FIX: Формуємо відповідь з тією ж кількістю преамбул ---
-        frame = bytes([0xFF]) * incoming_preambles_count + resp_core + bytes([chk])
-        
-        return frame
+        return b""

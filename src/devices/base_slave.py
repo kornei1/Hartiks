@@ -270,24 +270,33 @@ class BaseSlave:
             return self._response_core(start, cmd, bytes(out))
 
         elif cmd == 11:
-            # Simulator-friendly behaviour:
-            # Cmd 11 is "Read Unique Identifier Associated With Tag".
-            # We validate the tag (plain ASCII, padded with spaces) and, if it matches,
-            # return the same 4-byte header fields as shown in the Cmd11 UI block.
+            # 1. Перевірка Тегу (Standard ASCII 8 chars)
+            # Прибираємо пробіли для коректного порівняння
             req_tag = (data or b"").decode("ascii", errors="ignore").strip()
-            dev_tag = (self.tag or "").strip()
-            if req_tag and dev_tag and (req_tag != dev_tag):
-                return self.error_response(start, cmd, HART_STATUS["INVALID_DATA"])
+            my_tag = (self.tag or "").strip()
+            
+            # Якщо тег не співпадає - МОВЧИМО (імітація тиші на шині)
+            if req_tag != my_tag:
+                return b""
 
-            payload = bytes(
-                [
-                    self.hart_major_rev,
-                    self.min_preambles_required,
-                    self.device_rev,
-                    self.software_rev,
-                ]
-            )
-            return self._response_core(start, cmd, payload)
+            # 2. Якщо співпав - відповідаємо.
+            # Відповідь має структуру як у Command 0 (щоб Майстер дізнався ID)
+            payload = bytearray()
+            payload.append(0xFE)             # [0] Fixed format
+            payload.append(self.manuf_id)    # [1] Manufacturer ID
+            payload.append(self.dev_type)    # [2] Device Type
+            payload.append(self.min_preambles_required) # [3] Preambles
+            payload.append(5)                # [4] Universal Rev
+            payload.append(9)                # [5] Dev Spec Rev
+            payload.append(1)                # [6] Soft Rev
+            payload.append(1)                # [7] Hard Rev
+            payload.append(0)                # [8] Flags
+            # [9-11] Device ID (3 bytes)
+            payload.append((self.serial_number >> 16) & 0xFF)
+            payload.append((self.serial_number >> 8) & 0xFF)
+            payload.append(self.serial_number & 0xFF)
+
+            return self._response_core(start, cmd, bytes(payload))
 
         elif cmd == 12:
             msg = (self.message or "")[:24].ljust(24)
