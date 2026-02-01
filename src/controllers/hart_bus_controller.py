@@ -953,15 +953,17 @@ class HARTBusController(QtCore.QObject):
         if not parsed:
             return
 
-        cmd_id = parsed.get("command")
-        bc = parsed.get("byte_count")
-        s1 = parsed.get("status1")
-        s2 = parsed.get("status2")
-        payload = parsed.get("data", b"")
-        name = SUPPORTED_COMMANDS.get(cmd_id, f"Command {cmd_id}")
-        _append_text(self.decrypted_log_widget, f"Parsed RX: {name} | BC={bc} | S1={s1 if s1 is not None else '??'} | S2={s2 if s2 is not None else '??'}")
-        if isinstance(payload, (bytes, bytearray)) and payload:
-            _append_text(self.decrypted_log_widget, f"    Payload: {_hex(payload)}")
+        if control:
+            cmd_id = parsed.get("command")
+            bc = parsed.get("byte_count")
+            s1 = parsed.get("status1")
+            s2 = parsed.get("status2")
+            payload = parsed.get("data", b"")
+            name = SUPPORTED_COMMANDS.get(cmd_id, f"Command {cmd_id}")
+            
+            _append_text(self.decrypted_log_widget, f"Parsed RX: {name} | BC={bc} | S1={s1 if s1 is not None else '??'} | S2={s2 if s2 is not None else '??'}")
+            if isinstance(payload, (bytes, bytearray)) and payload:
+                _append_text(self.decrypted_log_widget, f"    Payload: {_hex(payload)}")
     def _update_last_response_ui(self, parsed: Optional[dict]):
         if parsed is None:
             return

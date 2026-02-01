@@ -159,6 +159,9 @@ def send_command_logic(controller, cmd: int):
         pass
 
     # ---------- UI updates ----------
+    if not control_flag:
+        return
+    
     ui = getattr(controller, "ui", None)
     if not parsed or ui is None:
         return
