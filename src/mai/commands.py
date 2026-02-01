@@ -29,10 +29,12 @@ LONG_TAG_LEN = 32
 # --- Utility helpers for fixed-size ASCII fields ---
 def pack_ascii_fixed(s: str, size: int) -> bytes:
     """
-    Pack ASCII string to fixed size with zero padding.
+    Pack ASCII string to fixed size with SPACE padding (0x20).
     """
     b = (s or "").encode("ascii", errors="ignore")[:size]
-    return b + b"\x00" * (size - len(b))
+    # Було: return b + b"\x00" * (size - len(b))
+    # Стало (пробіли):
+    return b.ljust(size, b"\x20")
 
 def unpack_ascii_fixed(b: bytes) -> str:
     """

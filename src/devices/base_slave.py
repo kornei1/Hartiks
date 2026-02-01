@@ -315,9 +315,24 @@ class BaseSlave:
             return self._response_core(start, cmd, payload)
 
         elif cmd == 14:
-            # SIMULATOR FORMAT for UI fields:
-            # payload = u32 serial + f32 upper + f32 lower + f32 min_span
-            payload = pack(">Ifff", int(self.serial_number) & 0xFFFFFFFF, float(self.upper_range), float(self.lower_range), float(self.min_span))
+            # REALISTIC IMPLEMENTATION:
+            # Structure: [Serial(3)][Units(1)][USL(4)][LSL(4)][MinSpan(4)]
+            
+            # 1. Отримуємо код одиниць з read_pv (наприклад, 57 для %, 32 для °C)
+            _pv_val, units_code = self.read_pv()
+
+            # 2. Формуємо серійний номер (3 байти)
+            ser = int(self.serial_number) & 0xFFFFFF
+            serial_bytes = bytes([(ser >> 16) & 0xFF, (ser >> 8) & 0xFF, ser & 0xFF])
+
+            # 3. Пакуємо: Unit(Byte) + 3x Float
+            # >Bfff = 1 байт (код одиниць) + 3 числа float
+            payload = serial_bytes + pack(">Bfff", 
+                                          units_code & 0xFF, 
+                                          float(self.upper_range), 
+                                          float(self.lower_range), 
+                                          float(self.min_span))
+            
             return self._response_core(start, cmd, payload)
 
         elif cmd == 15:

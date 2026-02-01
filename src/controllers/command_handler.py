@@ -306,17 +306,40 @@ def send_command_logic(controller, cmd: int):
             if le2: le2.setText(desc)
             if le3: le3.setText(f"{year:04d}-{month:02d}-{day:02d}")
 
-        # Cmd 14
+        # Cmd 14: Read PV Sensor Info
         elif cmd_id == 14 and len(payload) >= 16:
-            serial, upper, lower, minspan = struct.unpack(">Ifff", payload[:16])
+            # [Serial 3b][Units 1b][Upper 4b][Lower 4b][Span 4b]
+            
+            # 1. Серійний номер (3 байти)
+            serial = (payload[0] << 16) | (payload[1] << 8) | payload[2]
+
+            # 2. Розпаковка даних
+            units_code, upper, lower, minspan = struct.unpack(">Bfff", payload[3:16])
+
+            # 3. Словник одиниць вимірювання (можна розширити)
+            unit_map = {
+                32: "degC", 
+                57: "%", 
+                44: "m", 
+                19: "m3/h", 
+                59: "pH",
+                39: "mA",
+                43: "m3"
+            }
+            # Якщо код є в словнику - беремо текст, якщо ні - пишемо "code X"
+            u_str = unit_map.get(units_code, f"[{units_code}]")
+
+            # 4. Виведення в GUI (Число + Одиниця)
             le_s = getattr(ui, "lineEdit_command14_pv_serial", None)
             le_u = getattr(ui, "lineEdit_command14_pv_upper_limit", None)
             le_l = getattr(ui, "lineEdit_command14_pv_lower_limit", None)
             le_m = getattr(ui, "lineEdit_command14_pv_min_span", None)
+            
             if le_s: le_s.setText(str(serial))
-            if le_u: le_u.setText(f"{upper:.3f}")
-            if le_l: le_l.setText(f"{lower:.3f}")
-            if le_m: le_m.setText(f"{minspan:.3f}")
+            # Тут ми використовуємо f-string для додавання тексту
+            if le_u: le_u.setText(f"{upper:.3f} {u_str}")
+            if le_l: le_l.setText(f"{lower:.3f} {u_str}")
+            if le_m: le_m.setText(f"{minspan:.3f} {u_str}")
 
         # Cmd 15
         elif cmd_id == 15 and len(payload) >= 15:

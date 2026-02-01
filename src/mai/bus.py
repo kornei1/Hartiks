@@ -89,7 +89,7 @@ class HARTBus:
 
         # Якщо адреса 0 і команда 11 -> це пошук пристрою. 
         target_slaves = []
-        if cmd == 11 and polling == 0:
+        if cmd == 11 and polling == 0 :
             # Broadcast: перебираємо всі пристрої на шині
             with self._lock:
                 target_slaves = list(self._slaves.values())
