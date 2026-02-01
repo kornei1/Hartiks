@@ -315,9 +315,6 @@ class BaseSlave:
             return self._response_core(start, cmd, payload)
 
         elif cmd == 14:
-            # REALISTIC IMPLEMENTATION:
-            # Structure: [Serial(3)][Units(1)][USL(4)][LSL(4)][MinSpan(4)]
-            
             # 1. Отримуємо код одиниць з read_pv (наприклад, 57 для %, 32 для °C)
             _pv_val, units_code = self.read_pv()
 
@@ -336,9 +333,20 @@ class BaseSlave:
             return self._response_core(start, cmd, payload)
 
         elif cmd == 15:
-            # SIMULATOR FORMAT for UI fields:
-            # payload = alarm(1) + transfer(1) + upper(f32) + lower(f32) + damping(f32) + write_protect(1)
-            payload = bytes([self.alarm_code & 0xFF, self.transfer_code & 0xFF]) + pack(">fff", float(self.upper_range), float(self.lower_range), float(self.damping)) + bytes([self.write_protect & 0xFF])
+            # 1. Отримуємо код одиниць (щоб знати, в чому вимірюються Upper/Lower Range)
+            _, units_code = self.read_pv()
+
+            # 2. Пакуємо дані
+            payload = pack(">BBBfffBB", 
+                           self.alarm_code, 
+                           self.transfer_code, 
+                           units_code,               # <-- Доданий байт Units
+                           float(self.upper_range), 
+                           float(self.lower_range), 
+                           float(self.damping), 
+                           self.write_protect,
+                           0)                        # <-- Private Label Code (зазвичай 0)
+
             return self._response_core(start, cmd, payload)
 
         elif cmd == 16:

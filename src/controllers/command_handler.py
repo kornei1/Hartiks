@@ -341,26 +341,41 @@ def send_command_logic(controller, cmd: int):
             if le_l: le_l.setText(f"{lower:.3f} {u_str}")
             if le_m: le_m.setText(f"{minspan:.3f} {u_str}")
 
-        # Cmd 15
-        elif cmd_id == 15 and len(payload) >= 15:
-            alarm = payload[0]
-            transfer = payload[1]
-            upper, lower, damping = struct.unpack(">fff", payload[2:14])
-            wp = payload[14]
+        # Cmd 15: Read Output Info
+        elif cmd_id == 15 and len(payload) >= 16:
+            unpacked = struct.unpack(">BBBfffB", payload[:16]) 
+            
+            alarm = unpacked[0]
+            transfer = unpacked[1]
+            units_code = unpacked[2]
+            upper = unpacked[3]
+            lower = unpacked[4]
+            damping = unpacked[5]
+            wp = unpacked[6]
+
+            # Словники для розшифровки
             alarm_map = {0: "None", 1: "High", 2: "Low"}
             transfer_map = {0: "Linear", 1: "Sqrt"}
+            
+            # Одиниці вимірювання
+            unit_map = {32: "degC", 57: "%", 44: "m", 19: "m3/h", 59: "pH", 39: "mA", 43: "m3"}
+            u_str = unit_map.get(units_code, "")
+
+            # Оновлення GUI
             le_a = getattr(ui, "lineEdit_command15_pv_alarm", None)
             le_t = getattr(ui, "lineEdit_command15_pv_transfer", None)
             le_u = getattr(ui, "lineEdit_command15_pv_upper_range", None)
             le_l = getattr(ui, "lineEdit_command15_pv_lower_range", None)
             le_d = getattr(ui, "lineEdit_command15_pv_dumping", None)
             le_wp = getattr(ui, "lineEdit_command15_write_protect", None)
-            if le_a: le_a.setText(alarm_map.get(alarm, f"0x{alarm:02X}"))
-            if le_t: le_t.setText(transfer_map.get(transfer, f"0x{transfer:02X}"))
-            if le_u: le_u.setText(f"{upper:.3f}")
-            if le_l: le_l.setText(f"{lower:.3f}")
-            if le_d: le_d.setText(f"{damping:.3f}")
-            if le_wp: le_wp.setText("ON" if wp else "OFF")
+            
+            if le_a: le_a.setText(alarm_map.get(alarm, f"Code {alarm}"))
+            if le_t: le_t.setText(transfer_map.get(transfer, f"Code {transfer}"))
+            # Додаємо одиниці виміру до значень діапазону!
+            if le_u: le_u.setText(f"{upper:.3f} {u_str}")
+            if le_l: le_l.setText(f"{lower:.3f} {u_str}")
+            if le_d: le_d.setText(f"{damping:.3f} s") # Демпфування завжди в секундах
+            if le_wp: le_wp.setText("Yes" if wp else "No")
 
         # Cmd 16
         elif cmd_id == 16 and len(payload) >= 3:
