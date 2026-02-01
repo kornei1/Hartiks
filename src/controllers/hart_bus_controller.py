@@ -379,7 +379,17 @@ class HARTBusController(QtCore.QObject):
                 parsed = parse_response_frame(resp)
             except Exception:
                 parsed = None
-        self._log_rx(resp, parsed=parsed)
+        # Check control checkbox state
+        control_flag = False
+
+        if self.control_checkbox:
+            try:
+                control_flag = self.control_checkbox.isChecked()
+            except Exception:
+                pass
+
+        # Передаємо control_flag у функцію логування
+        self._log_rx(resp, parsed=parsed, control=control_flag)
 
         if not resp:
             self._notify("Manual send: no response")
