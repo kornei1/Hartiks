@@ -39,8 +39,6 @@ SUPPORTED_COMMANDS = {
     48: "Read Additional Status",
 }
 
-
-
 # core protocol / bus / master (можуть бути різні реалізації у твоєму проєкті)
 try:
     from mai.message_parser import parse_response_frame, parse_request_frame
@@ -156,6 +154,24 @@ class HARTBusController(QtCore.QObject):
         # control checkbox for bitwise decode
         self.control_checkbox = find_widget(["control_checkbox", "checkBox_control", "checkBoxControl"])
 
+        # --- статистика отриманих пакетів ---
+        self.stats_accepted = 0
+        self.stats_rejected = 0
+        self.stats_wrong = 0
+        # Знаходимо віджети статистики (GUIv2.py)
+        self.accepted_widget = find_widget(["accepted_packets"])
+        self.rejected_widget = find_widget(["rejected_packets"])
+        self.wrong_widget = find_widget(["wrong_packets"])
+        self.decrypted_clear_button = find_widget(["decrypted_data_clear_button", "clearStatsButton"])
+        if self.decrypted_clear_button:
+            try:
+                self.decrypted_clear_button.clicked.connect(self._clear_stats)
+            except Exception:
+                pass
+        # Інітиалізуємо UI статистики
+        self._update_stats_ui()
+        # -----------------------------------------------
+
         # --- init bus & master (tolerant) ---
         try:
             delay_ms = int(self.delay_widget.value()) if hasattr(self.delay_widget, "value") else 200
@@ -251,7 +267,47 @@ class HARTBusController(QtCore.QObject):
         self._on_frame_format_changed()
         # ----------------------------------------------------
 
-        # --- NEW: Метод обробки перемикача Short/Long ---
+        # Manual packet sender (Logs tab): add SEND button + Shift+Enter
+        self._setup_manual_send_controls()
+
+    # --- ДОДАНО: СИМУЛЯЦІЯ ЧАСУ ТА ТАЙМАУТ (НЕБЛОКУЮЧА) ---
+    def _simulate_delay_and_check_timeout(self) -> bool:
+        """
+        Імітує затримку без зависання UI використовуючи локальний QEventLoop.
+        Повертає True, якщо затримка > 305 мс (Таймаут HART протоколу).
+        """
+        try:
+            delay_ms = 200
+            if hasattr(self.delay_widget, "value"):
+                delay_ms = int(self.delay_widget.value())
+            elif self.bus and hasattr(self.bus, "delay_ms"):
+                delay_ms = self.bus.delay_ms
+
+            # Синхронізуємо час із шиною
+            if self.bus and hasattr(self.bus, "set_delay"):
+                self.bus.set_delay(delay_ms)
+
+            # Робимо реальну затримку часу, під час якої UI не висне!
+            if delay_ms > 0:
+                loop = QtCore.QEventLoop()
+                QtCore.QTimer.singleShot(delay_ms, loop.quit)
+                loop.exec_()
+
+            # Якщо час перевищив ліміт стандарту HART — це таймаут
+            if delay_ms > 305:
+                return True 
+                
+        except Exception as e:
+            print(f"Помилка під час імітації затримки: {e}")
+            
+        return False
+    # --------------------------------------------------------
+
+    """Re-scan bus button handler"""
+    def UpdateBusButtonClicked(self):
+        self.scan_bus()
+
+    # --- NEW: Метод обробки перемикача Short/Long ---
     def _on_frame_format_changed(self):
         if not self.master:
             return
@@ -268,13 +324,6 @@ class HARTBusController(QtCore.QObject):
         except Exception:
             pass
     # ------------------------------------------------
-
-        # Manual packet sender (Logs tab): add SEND button + Shift+Enter
-        self._setup_manual_send_controls()
-    
-    """Re-scan bus button handler"""
-    def UpdateBusButtonClicked(self):
-        self.scan_bus()
 
     # ---------------- manual packets (Logs tab) ----------------
     def _setup_manual_send_controls(self):
@@ -464,12 +513,17 @@ class HARTBusController(QtCore.QObject):
         """Scan devices via bus.scan_devices() and populate table."""
         if not self.table:
             return
+            
+        # --- ДОДАНО: СИМУЛЯЦІЯ ЧАСУ ДЛЯ СКАНУВАННЯ ---
+        is_timeout = self._simulate_delay_and_check_timeout()
+        
         devices = []
-        if self.bus and hasattr(self.bus, "scan_devices"):
+        if not is_timeout and self.bus and hasattr(self.bus, "scan_devices"):
             try:
                 devices = self.bus.scan_devices()
             except Exception:
                 devices = []
+                
         # ensure at least 4 columns exist
         try:
             if self.table.columnCount() < 4:
@@ -497,6 +551,64 @@ class HARTBusController(QtCore.QObject):
                 self.table.selectRow(0)
             except Exception:
                 pass
+
+    def _clear_stats(self):
+        """Очистити статистику пакетів (при натисканні Clear у decrypted_data)."""
+        self.stats_accepted = 0
+        self.stats_rejected = 0
+        self.stats_wrong = 0
+        self._update_stats_ui()
+        # Також очищуємо логи
+        if isinstance(self.decrypted_log_widget, QtWidgets.QTextEdit):
+            try:
+                self.decrypted_log_widget.clear()
+            except Exception:
+                pass
+
+    def _update_stats_ui(self):
+        """Оновити UI віджетів статистики."""
+        try:
+            if isinstance(self.accepted_widget, QtWidgets.QLineEdit):
+                self.accepted_widget.setText(str(self.stats_accepted))
+        except Exception:
+            pass
+        try:
+            if isinstance(self.rejected_widget, QtWidgets.QLineEdit):
+                self.rejected_widget.setText(str(self.stats_rejected))
+        except Exception:
+            pass
+        try:
+            if isinstance(self.wrong_widget, QtWidgets.QLineEdit):
+                self.wrong_widget.setText(str(self.stats_wrong))
+        except Exception:
+            pass
+
+    def _classify_packet(self, resp: bytes, parsed: Optional[dict]) -> str:
+        """
+        Класифікує пакет як 'Accepted', 'Rejected', або 'Wrong'.
+        
+        - Wrong: parse_response_frame повернув None або помилку (CRC, таймаут)
+        - Rejected: Пакет розпарсено, але Status1 != 0 (помилка виконання команди)
+        - Accepted: Пакет розпарсено успішно і Status1 == 0 (команда успішна)
+        """
+        if parsed is None:
+            return "Wrong"
+        
+        status1 = parsed.get("status1", None)
+        if status1 is None:
+            # Спробуємо витягти зі raw_data
+            raw_data = parsed.get("raw_data", b"")
+            if isinstance(raw_data, (bytes, bytearray)) and len(raw_data) >= 1:
+                status1 = raw_data[0]
+        
+        if status1 is not None:
+            status1 = int(status1) & 0xFF
+            if status1 == 0:
+                return "Accepted"
+            else:
+                return "Rejected"
+        
+        return "Wrong"
 
     def clear_table(self):
         if not self.table:
@@ -699,7 +811,7 @@ class HARTBusController(QtCore.QObject):
                 btn.clicked.connect(partial(self.send_command, cmd_id))
             except Exception:
                 pass
-    # ---------------- core: build/send/parse ----------------
+
     # ---------------- core: build/send/parse ----------------
     def _build_request_via_lib(self, addr: int, cmd: int, data: bytes = b"") -> Optional[bytes]:
         """
@@ -721,12 +833,6 @@ class HARTBusController(QtCore.QObject):
                 if len(data) >= 1:
                     return universal.write_polling_address(addr, data[0])
             elif cmd == 11:
-                # Cmd 11 in our simulator is sent to the *selected device address*.
-                # The upstream library also provides a "UID by Tag" helper that does NOT take an address
-                # and ends up producing a long-frame with address ...00 (poll 0), which yields no response
-                # on our simulated bus.
-                # So we build the request explicitly for the selected address and include the tag as plain ASCII.
-                # (Our simulated slaves validate tag and respond with the same 4-byte header as Cmd0.)
                 tag_bytes = data if data else b""
                 return hart_protocol.tools.pack_command(addr, command_id=11, data=tag_bytes)
             elif cmd == 12:
@@ -890,12 +996,14 @@ class HARTBusController(QtCore.QObject):
     def _send_on_bus(self, req: bytes, addr: Optional[int]) -> bytes:
         """
         Send raw frame using whichever API is present:
-        1) self.bus.transact_frame(req) -> returns raw response frame
-        2) self.bus.send_to_slave(addr, req_bytes) -> returns raw response
-        3) if bus not present, return b''.
         """
         if self.bus is None:
             return b""
+            
+        # --- ДОДАНО: СИМУЛЯЦІЯ ЗАТРИМКИ ТА ТАЙМАУТУ ---
+        if self._simulate_delay_and_check_timeout():
+            return b"" # Таймаут більше 305мс, перериваємо команду
+            
         # prefer transact_frame
         if hasattr(self.bus, "transact_frame"):
             try:
@@ -942,8 +1050,19 @@ class HARTBusController(QtCore.QObject):
         _append_text(self.send_data_widget, f"    Raw: {_hex(req)}")
 
     def _log_rx(self, resp: bytes, parsed: Optional[dict] = None, control: bool = False):
+        # Класифікуємо пакет (оновлюємо статистику)
+        classification = self._classify_packet(resp, parsed)
+        if classification == "Accepted":
+            self.stats_accepted += 1
+        elif classification == "Rejected":
+            self.stats_rejected += 1
+        else:  # Wrong
+            self.stats_wrong += 1
+            
+        self._update_stats_ui()
+
         if not resp:
-            _append_text(self.raw_log_widget, "RX: (empty)")
+            _append_text(self.raw_log_widget, "RX: Timeout Error (Empty)")
             return
 
         # raw
@@ -968,9 +1087,10 @@ class HARTBusController(QtCore.QObject):
             payload = parsed.get("data", b"")
             name = SUPPORTED_COMMANDS.get(cmd_id, f"Command {cmd_id}")
             
-            _append_text(self.decrypted_log_widget, f"Parsed RX: {name} | BC={bc} | S1={s1 if s1 is not None else '??'} | S2={s2 if s2 is not None else '??'}")
+            _append_text(self.decrypted_log_widget, f"Parsed RX: {name} | BC={bc} | S1={s1 if s1 is not None else '??'} | S2={s2 if s2 is not None else '??'} [{classification}]")
             if isinstance(payload, (bytes, bytearray)) and payload:
                 _append_text(self.decrypted_log_widget, f"    Payload: {_hex(payload)}")
+                
     def _update_last_response_ui(self, parsed: Optional[dict]):
         if parsed is None:
             return
@@ -1087,6 +1207,7 @@ class HARTBusController(QtCore.QObject):
             return None
 
         return b""
+        
     # -------------------- main public: send command --------------------
     def send_command(self, cmd: int):
         send_command_logic(self, cmd)

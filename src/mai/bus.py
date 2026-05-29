@@ -61,7 +61,7 @@ class HARTBus:
                     "model": dev.model,
                     "manufacturer": dev.manufacturer
                 })
-        time.sleep(self.delay_ms / 1000.0)
+        # ВИДАЛЕНО: time.sleep(self.delay_ms / 1000.0) -> Затримкою тепер керує контролер
         return out
 
     def _route_to_slave(self, polling_address: int):
@@ -101,7 +101,7 @@ class HARTBus:
 
         # Перебираємо кандидатів (для Unicast це 1, для Broadcast - всі)
         for slave in target_slaves:
-            time.sleep(self.delay_ms / 1000.0)
+            # ВИДАЛЕНО: time.sleep(self.delay_ms / 1000.0)
             resp_core = slave.handle_request(parsed)
             
             # Якщо slave повернув дані - це наша відповідь!
