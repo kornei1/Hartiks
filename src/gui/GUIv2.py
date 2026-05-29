@@ -168,18 +168,14 @@ class Ui_HARTAnalyzer(object):
 "    font-size: 14px;\n"
 "    text-align: center;\n"
 "    font-weight: 600;\n"
-"    word-wrap: wrap;\n"
 "    height: 35px;\n"
-"    white-space: break-word;\n"
 "    width: 100%;\n"
 "    padding: 5px 5px;\n"
-"    transition: .3s;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
 "    border-color: black;\n"
 "    font-size: 16px;\n"
-"    cursor: pointer;\n"
 "}")
         self.updateBusButton.setObjectName("updateBusButton")
         self.updateBusVerticalLayout.addWidget(self.updateBusButton)

@@ -5,14 +5,6 @@ from controllers.hart_bus_controller import HARTBusController
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-
-    theme_path = "themes/modern_dark_purple.qss!"
-    try:
-        with open(theme_path, "r", encoding="utf-8") as f:
-            app.setStyleSheet(f.read())
-    except FileNotFoundError:
-        print(f"[INFO] Theme file not found: {theme_path}. Continuing without theme.")
-
     main_window = HARTWindow()
     main_window.setWindowTitle("HART Protocol Simulator")
 

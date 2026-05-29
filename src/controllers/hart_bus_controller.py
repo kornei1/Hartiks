@@ -2,10 +2,7 @@
 from PyQt5 import QtWidgets, QtCore
 from typing import Optional, Any, List
 from functools import partial
-import binascii
-import struct
 import re
-import random
 import os
 import sys
 
