@@ -111,6 +111,17 @@ def send_command_logic(controller, cmd: int):
         critical("Build error", f"Cannot build request: {e}")
         return
 
+    # Update current CRC for every request
+    try:
+        chk = 0
+        for b in req:
+            chk ^= b
+        ui = getattr(controller, "ui", None)
+        if ui is not None and getattr(ui, "current_string_crc", None):
+            ui.current_string_crc.setText(f"{chk & 0xFF:02X}")
+    except Exception:
+        pass
+
     control_flag = control_enabled()
 
     # ---------- TX ----------

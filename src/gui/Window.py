@@ -1,4 +1,3 @@
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from .GUIv2 import Ui_HARTAnalyzer
 from PyQt5.QtWidgets import QFileDialog
@@ -53,8 +52,8 @@ class HARTWindow(QtWidgets.QMainWindow):
         self.runtime_options_group = QtWidgets.QGroupBox("Runtime options", self)
         options_layout = QtWidgets.QHBoxLayout(self.runtime_options_group)
         
-        # Control checkbox (bitwise decode in logs)
-        self.control_checkbox = QtWidgets.QCheckBox("Control: bitwise decode in logs", self.runtime_options_group)
+        # Control checkbox (Parse Traffic in logs)
+        self.control_checkbox = QtWidgets.QCheckBox("Control: Parse Traffic in logs", self.runtime_options_group)
         self.control_checkbox.setChecked(True)
         self.control_checkbox.setToolTip("When enabled, responses are explained bit-by-bit in the logs panel.")
         self.control_checkbox.stateChanged.connect(self.changeControlCheckBox)
@@ -106,38 +105,14 @@ class HARTWindow(QtWidgets.QMainWindow):
         self.ui.decrypted_data_clear_button.clicked.connect(lambda: self.onClear([self.ui.decrypted_data_text_edit]))
         self.ui.clear_device_button.clicked.connect(lambda: self.onClear([self.ui.device_address_hex, self.ui.device_id_dec]))
 
-        # --- Optional: small polish for Logs tab ---
-        # If the "Data Logs and Manual Packets" tab exists, add a filter combobox (non-breaking).
-        # We will not rely on specific object names; we check dynamically.
-        try:
-            # Find tab index by title
-            tabw = self.ui.tab_widget
-            logs_index = None
-            for i in range(tabw.count()):
-                if "Logs" in tabw.tabText(i):
-                    logs_index = i
-                    break
-            if logs_index is not None:
-                logs_tab = tabw.widget(logs_index)
-                top_bar = QtWidgets.QHBoxLayout()
-                self.log_filter_combo = QtWidgets.QComboBox(logs_tab)
-                self.log_filter_combo.addItems(["All", "Only Requests", "Only Responses"])
-                self.log_filter_combo.setToolTip("Filter visible log entries")
-                top_bar.addWidget(QtWidgets.QLabel("Log filter:", logs_tab))
-                top_bar.addWidget(self.log_filter_combo)
-                top_bar.addStretch(1)
+        # About menu handlers
+        self.ui.actionAbout.triggered.connect(self.showAbout)
+        self.ui.actionAbout_2.triggered.connect(self.showAbout)
 
-                # Prepend to the logs tab main layout
-                if isinstance(logs_tab.layout(), QtWidgets.QVBoxLayout):
-                    logs_tab.layout().insertLayout(0, top_bar)
-                else:
-                    # Create a container if no layout found (future-proof)
-                    v = QtWidgets.QVBoxLayout(logs_tab)
-                    logs_tab.setLayout(v)
-                    v.addLayout(top_bar)
-        except Exception:
-            # Silent: UI structure may differ; we don't break the app
-            pass
+        # Exit menu handlers
+        self.ui.actionExit.triggered.connect(self.close)
+        self.ui.actionExit_2.triggered.connect(self.close)
+
     
     """
     Apply random [a,b] to Number of Preambles
@@ -238,6 +213,31 @@ class HARTWindow(QtWidgets.QMainWindow):
         for element in wingets:
             if hasattr(element, "setText"):
                 element.setText("")
+
+    """
+    Show About dialog with program description
+    """
+    def showAbout(self):
+        about_text = """
+<h2>HART Protocol Simulator</h2>
+<p><b>Description:</b></p>
+<p>An application for emulating HART protocol and working with HART devices on a virtual bus.</p>
+
+<p><b>Features:</b></p>
+<ul>
+    <li>HART bus scanning</li>
+    <li>Emulation of various sensor types (level, flow, temperature, pH, transparency)</li>
+    <li>Sending and receiving HART commands</li>
+    <li>Frame decoding and logging</li>
+    <li>Support for short and long frame formats</li>
+</ul>
+"""
+        
+        msg = QtWidgets.QMessageBox(self)
+        msg.setWindowTitle("About")
+        msg.setText(about_text)
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.exec_()
 
 
 def main():
