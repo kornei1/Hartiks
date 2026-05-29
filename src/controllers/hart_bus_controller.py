@@ -403,18 +403,36 @@ class HARTBusController(QtCore.QObject):
             QtWidgets.QMessageBox.warning(self.win, "Manual send", f"Cannot send: {err}")
             return
 
-        # update UI helpers if present
+        # --- РОЗУМНЕ ОНОВЛЕННЯ CRC ДЛЯ РУЧНОГО РЕЖИМУ ---
         try:
-            chk = 0
-            for b in frame:
-                chk ^= b
-            if getattr(self.ui, "current_string_crc", None):
-                self.ui.current_string_crc.setText(f"{chk & 0xFF:02X}")
+            if getattr(self.ui, "current_string_crc", None) and frame:
+                # Шукаємо початок кадру (ігноруємо преамбули 0xFF)
+                start_idx = 0
+                while start_idx < len(frame) and frame[start_idx] == 0xFF:
+                    start_idx += 1
+                
+                if start_idx < len(frame):
+                    chk = 0
+                    for b in frame[start_idx:]:
+                        chk ^= b
+                    
+                    # Якщо chk == 0, значить останній байт вже був правильною CRC
+                    if chk == 0 and len(frame[start_idx:]) > 1:
+                        final_crc = frame[-1]
+                    else:
+                        # Інакше chk - це та CRC, якої не вистачає для введених байтів
+                        final_crc = chk
+                        
+                    self.ui.current_string_crc.setText(f"{final_crc:02X}")
+                else:
+                    self.ui.current_string_crc.setText("FF")
+                    
             if getattr(self.ui, "Byte_counter1", None) and self.ui.Byte_counter1.isChecked():
                 if getattr(self.ui, "send_byte_counter", None):
                     self.ui.send_byte_counter.setText(str(len(frame)))
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"CRC Update Error: {e}")
+        # ------------------------------------------------
 
         # send
         self._append_manual_tx(frame)
@@ -425,10 +443,10 @@ class HARTBusController(QtCore.QObject):
                 parsed = parse_response_frame(resp)
             except Exception:
                 parsed = None
+                
         # Check control checkbox state
         control_flag = False
-
-        if self.control_checkbox:
+        if getattr(self, "control_checkbox", None):
             try:
                 control_flag = self.control_checkbox.isChecked()
             except Exception:
@@ -438,7 +456,7 @@ class HARTBusController(QtCore.QObject):
         self._log_rx(resp, parsed=parsed, control=control_flag)
 
         if not resp:
-            self._notify("Manual send: no response")
+            self._notify("Manual send: Timeout / no response")
         else:
             s1 = parsed.get("status1") if parsed else None
             s2 = parsed.get("status2") if parsed else None

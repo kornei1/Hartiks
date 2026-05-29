@@ -113,12 +113,11 @@ def send_command_logic(controller, cmd: int):
 
     # Update current CRC for every request
     try:
-        chk = 0
-        for b in req:
-            chk ^= b
         ui = getattr(controller, "ui", None)
-        if ui is not None and getattr(ui, "current_string_crc", None):
-            ui.current_string_crc.setText(f"{chk & 0xFF:02X}")
+        if ui is not None and getattr(ui, "current_string_crc", None) and req:
+            # req - це вже повністю сформований валідний кадр. 
+            # Останній байт у ньому - це і є правильна CRC, тому просто беремо його.
+            ui.current_string_crc.setText(f"{req[-1]:02X}")
     except Exception:
         pass
 
