@@ -7,6 +7,13 @@ try:
 except Exception:
     parse_response_frame = None
 
+try:
+    from utils.units import UNITS, get_unit_name
+except Exception:
+    UNITS = {}
+    def get_unit_name(code, default=None):
+        return default if default is not None else str(code)
+
 
 def send_command_logic(controller, cmd: int):
     """Build request for selected device and command id, send, log and update UI."""
@@ -203,17 +210,14 @@ def send_command_logic(controller, cmd: int):
         # Cmd 1: >Bf (units, value)
         elif cmd_id == 1 and len(payload) >= 5:
             units, val = struct.unpack(">Bf", payload[:5])
-            unit_names = {
-                44: "m", 19: "m3/h", 32: "degC", 57: "%", 59: "pH"
-            }
-            unit_str = unit_names.get(units, str(units))
+            unit_str = get_unit_name(units, str(units))
             le = getattr(ui, "lineEdit_command1_none", None)
             if le:
                 le.setText(f"{val:.3f} {unit_str}")
 
-        # Cmd 2: >fBf (mA, reserved, percent)
-        elif cmd_id == 2 and len(payload) >= 9:
-            ma, _r, perc = struct.unpack(">fBf", payload[:9])
+        # Cmd 2: >ff (mA, percent)
+        elif cmd_id == 2 and len(payload) >= 8:
+            ma, perc = struct.unpack(">ff", payload[:8])
             le1 = getattr(ui, "lineEdit_command2_ma", None)
             le2 = getattr(ui, "lineEdit_command2_percent", None)
             if le1: le1.setText(f"{ma:.3f}")
@@ -226,18 +230,12 @@ def send_command_logic(controller, cmd: int):
                     unpacked = struct.unpack(">fBfBfBfBf", payload[:24])
                     ma_val = unpacked[0]
                     
-                    # --- FIX: Форматування (прибираємо "0" та "unused") ---
                     def fmt_var(unit_code, val):
-                        if unit_code == 250: # Unused
+                        if unit_code == 250:  # Unused
                             return ""
-                        if unit_code == 0:   # Dimensionless
+                        u_str = get_unit_name(unit_code)
+                        if not u_str:
                             return f"{val:.3f}"
-
-                        unit_map = {
-                            44: "m", 19: "m3/h", 32: "degC", 57: "%", 59: "pH", 
-                            39: "mA", 40: "kOhm", 41: "Ohm", 43: "m3", 21: "m/s", 38: "Hz"
-                        }
-                        u_str = unit_map.get(unit_code, str(unit_code))
                         return f"{val:.3f} {u_str}"
                     # ------------------------------------------
 
@@ -329,18 +327,8 @@ def send_command_logic(controller, cmd: int):
             # 2. Розпаковка даних
             units_code, upper, lower, minspan = struct.unpack(">Bfff", payload[3:16])
 
-            # 3. Словник одиниць вимірювання (можна розширити)
-            unit_map = {
-                32: "degC", 
-                57: "%", 
-                44: "m", 
-                19: "m3/h", 
-                59: "pH",
-                39: "mA",
-                43: "m3"
-            }
-            # Якщо код є в словнику - беремо текст, якщо ні - пишемо "code X"
-            u_str = unit_map.get(units_code, f"[{units_code}]")
+            # Отримуємо назву одиниці з централізованого словника
+            u_str = get_unit_name(units_code, f"[{units_code}]")
 
             # 4. Виведення в GUI (Число + Одиниця)
             le_s = getattr(ui, "lineEdit_command14_pv_serial", None)
@@ -370,9 +358,8 @@ def send_command_logic(controller, cmd: int):
             alarm_map = {0: "None", 1: "High", 2: "Low"}
             transfer_map = {0: "Linear", 1: "Sqrt"}
             
-            # Одиниці вимірювання
-            unit_map = {32: "degC", 57: "%", 44: "m", 19: "m3/h", 59: "pH", 39: "mA", 43: "m3"}
-            u_str = unit_map.get(units_code, "")
+            # Отримуємо назву одиниці з централізованого словника
+            u_str = get_unit_name(units_code, "")
 
             # Оновлення GUI
             le_a = getattr(ui, "lineEdit_command15_pv_alarm", None)

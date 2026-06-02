@@ -38,7 +38,6 @@ class LevelSensor(BaseSlave):
         
         # QV: Signal Amplitude (dB). Сила ехо-сигналу.
         # Гарний сигнал ~50-60 dB. 
-        # Unit 0 (безрозмірний або dB, якщо підтримується, але 0 безпечніше для демо)
         amp = 55.0 + random.uniform(-2.0, 2.0)
         
-        return (dist, 44), (elec_temp, 32), (amp, 0)
+        return (dist, 44), (elec_temp, 32), (amp, 123) # Unit 123 = dB

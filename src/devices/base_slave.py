@@ -83,12 +83,14 @@ class BaseSlave:
 
     def read_sv_tv_qv(self):
     # SV = Electronics Temperature (наприклад, 28°C) - код 32
-    # TV і QV поки залишимо 0 (Unused - код 250)
+    # TV - Unused (код 250)
+    # QV = Signal Strength (децибели) - код 123
         import random
         elec_temp = 28.0 + random.uniform(-1.0, 1.0) 
+        signal_strength = -45.0 + random.uniform(-5.0, 5.0)  # Типовий рівень сигналу в dB
 
     # Повертаємо пари (значення, код_одиниць)
-        return (elec_temp, 32), (0.0, 250), (0.0, 250)
+        return (elec_temp, 32), (0.0, 250), (signal_strength, 123)
 
     def read_loop_current_and_percent(self) -> Tuple[float, float]:
         # 1. Читаємо значення (воно завжди змінюється, бо там рандом/симуляція)
@@ -206,7 +208,7 @@ class BaseSlave:
 
         elif cmd == 2:
             ma, perc = self.read_loop_current_and_percent()
-            payload = pack(">fBf", float(ma), 0, float(perc))
+            payload = pack(">ff", float(ma), float(perc))
             return self._response_core(start, cmd, payload)
 
         elif cmd == 3:
